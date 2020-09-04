@@ -1326,7 +1326,7 @@ export function printStaticC(node: Node, i: number = 0, recursion?: Recursion): 
       return printStaticCTypeDeclaration(node)
     case 'CustomTypeDeclaration':
     case 'CustomCombinator':
-      return node.static
+      return `t.Typeof<typeof ${node.runtime}>`
     case 'ExactCombinator':
       return printStaticCExactCombinator(node, i, recursion)
     case 'StrictCombinator':

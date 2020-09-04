@@ -244,6 +244,21 @@ export type FooC = t.ReadonlyC<t.TypeC<{
     assert.strictEqual(t.printStaticC(declaration), `type FooC = t.RecordC<t.StringC, t.NumberC>`)
   })
 
+  it('arrayCombinator', () => {
+    const declaration = t.typeDeclaration(
+      'Foo',
+      t.typeCombinator([t.property('foo', t.arrayCombinator(t.stringType))], 'FooC'),
+      true,
+      false
+    )
+    assert.strictEqual(
+      t.printStaticC(declaration),
+      `export type FooC = t.TypeC<{
+  foo: t.ArrayC<t.StringC>
+}>`
+    )
+  })
+
   it('readonlyArrayCombinator', () => {
     const declaration = t.typeDeclaration(
       'Foo',
