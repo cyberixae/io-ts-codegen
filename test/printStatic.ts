@@ -200,10 +200,27 @@ type BExprOutput =
       )
     })
 
+    it('should handle the isExcplicit argument', () => {
+      const declaration = t.typeDeclaration(
+        'Foo',
+        t.typeCombinator([t.property('foo', t.stringType)], 'Foo'),
+        true,
+        true,
+        true
+      )
+      assert.strictEqual(
+        t.printStatic(declaration),
+        `export type Foo = Readonly<{
+  foo: string
+}>`
+      )
+    })
+
     it('should handle the description argument', () => {
       const declaration = t.typeDeclaration(
         'Foo',
         t.typeCombinator([t.property('foo', t.stringType)], 'Foo'),
+        true,
         true,
         true,
         'bar'

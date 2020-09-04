@@ -74,14 +74,9 @@ describe('printStaticC', () => {
       assert.strictEqual(
         t.printStaticC(declaration),
         `type BExprC = t.UnionC<[
-  t.TypeOf<Lit_bVC>,
-  t.TypeOf<NotVC>,
-  t.TypeOf<AndVC>
-]>
-type BExprOutputC = t.UnionC<[
-  t.OutputOf<Lit_bVC>,
-  t.OutputOf<NotVC>,
-  t.OutputOf<AndVC>
+  Lit_bVC,
+  NotVC,
+  AndVC
 ]>`
       )
     })
@@ -195,10 +190,27 @@ type BExprOutputC = t.UnionC<[
       )
     })
 
+    it('should handle the isExplicit argument', () => {
+      const declaration = t.typeDeclaration(
+        'Foo',
+        t.typeCombinator([t.property('foo', t.stringType)], 'FooC'),
+        true,
+        true,
+        true
+      )
+      assert.strictEqual(
+        t.printStaticC(declaration),
+        `export type FooC = t.ReadonlyC<t.TypeC<{
+  foo: t.StringC
+}>>`
+      )
+    })
+
     it('should handle the description argument', () => {
       const declaration = t.typeDeclaration(
         'Foo',
         t.typeCombinator([t.property('foo', t.stringType)], 'FooC'),
+        true,
         true,
         true,
         'bar'

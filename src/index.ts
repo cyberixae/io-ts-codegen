@@ -198,6 +198,7 @@ export interface TypeDeclaration extends Readonly {
   name: string
   type: TypeReference
   isExported: boolean
+  isExplicit: boolean
   description?: string
 }
 
@@ -446,6 +447,7 @@ export function typeDeclaration(
   isExported: boolean = false,
   /** @deprecated */
   isReadonly: boolean = false,
+  isExplicit: boolean = false,
   description?: string
 ): TypeDeclaration {
   return {
@@ -453,6 +455,7 @@ export function typeDeclaration(
     name,
     type,
     isExported,
+    isExplicit,
     isReadonly,
     description
   }
@@ -815,6 +818,8 @@ function printRuntimeTypeDeclaration(declaration: TypeDeclaration, i: number): s
   }
   if (type.kind === 'RecursiveCombinator') {
     s = `const ${name}: t.Type<${name}, ${name}Output> = ${s}`
+  } else if (declaration.isExplicit) {
+    s = `const ${name}: ${name}C = ${s}`
   } else {
     s = `const ${name} = ${s}`
   }
@@ -895,7 +900,7 @@ export function printRuntime(node: Node, i: number = 0): string {
 export function getRecursiveTypeDeclaration(declaration: TypeDeclaration): TypeDeclaration {
   const name = declaration.name
   const recursive = recursiveCombinator(identifier(name), name, declaration.type)
-  return typeDeclaration(name, recursive, declaration.isExported, declaration.isReadonly)
+  return typeDeclaration(name, recursive, declaration.isExported, declaration.isReadonly, declaration.isExplicit)
 }
 
 export function sort(
@@ -1261,54 +1266,19 @@ function printStaticCTypeDeclarationType(
 }
 
 function printStaticCTypeDeclaration(declaration: TypeDeclaration): string {
-  if (declaration.type.kind === 'RecursiveCombinator') {
-    return (
-      printStaticCTypeDeclarationType(
-        declaration.type,
-        declaration.name,
-        declaration.isReadonly,
-        declaration.isExported,
-        declaration.description,
-        {
-          name: declaration.name,
-          output: false
-        }
-      ) +
-      '\n' +
-      printStaticCTypeDeclarationType(
-        declaration.type,
-        declaration.name + 'Output',
-        declaration.isReadonly,
-        declaration.isExported,
-        declaration.description,
-        {
-          name: declaration.name,
-          output: true
-        }
-      )
-    )
-  } else {
-    return printStaticCTypeDeclarationType(
-      declaration.type,
-      declaration.name,
-      declaration.isReadonly,
-      declaration.isExported,
-      declaration.description
-    )
-  }
+  return printStaticCTypeDeclarationType(
+    declaration.type,
+    declaration.name,
+    declaration.isReadonly,
+    declaration.isExported,
+    declaration.description
+  )
 }
 
 export function printStaticC(node: Node, i: number = 0, recursion?: Recursion): string {
   switch (node.kind) {
     case 'Identifier':
-      if (recursion) {
-        if (node.name === recursion.name) {
-          return recursion.output ? node.name + 'Output' : node.name
-        } else {
-          return recursion.output ? `t.OutputOf<${node.name}C>` : `t.TypeOf<${node.name}C>`
-        }
-      }
-      return `t.TypeOf<${node.name}C>`
+      return node.name + 'C'
     case 'StringType':
     case 'NumberType':
     case 'BooleanType':

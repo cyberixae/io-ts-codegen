@@ -276,10 +276,21 @@ describe('printRuntime', () => {
       )
     })
 
+    it('should handle the isExplicit argument', () => {
+      const declaration = t.typeDeclaration('Foo', t.typeCombinator([t.property('foo', t.stringType)]), true, true, true)
+      assert.strictEqual(
+        t.printRuntime(declaration),
+        `export const Foo: FooC = t.readonly(t.type({
+  foo: t.string
+}), 'Foo')`
+      )
+    })
+
     it('should handle description argument', () => {
       const declaration = t.typeDeclaration(
         'Foo',
         t.typeCombinator([t.property('foo', t.stringType)]),
+        true,
         true,
         true,
         'bar'
@@ -287,7 +298,7 @@ describe('printRuntime', () => {
       assert.strictEqual(
         t.printRuntime(declaration),
         `/** bar */
-export const Foo = t.readonly(t.type({
+export const Foo: FooC = t.readonly(t.type({
   foo: t.string
 }), 'Foo')`
       )
