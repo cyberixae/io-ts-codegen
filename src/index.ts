@@ -1181,17 +1181,13 @@ function printStaticCPartialCombinator(c: PartialCombinator, i: number, recursio
   return s
 }
 
-function printStaticCTypesCombinator(
-  types: Array<TypeReference>,
-  i: number,
-  recursion?: Recursion
-): string {
+function printStaticCTypesCombinator(types: Array<TypeReference>, i: number, recursion?: Recursion): string {
   const indentation = indent(i + 1)
   return types.map(t => `${indentation}${printStaticC(t, i, recursion)}`).join(`,\n`)
 }
 
 function printStaticCUnionCombinator(c: UnionCombinator, i: number, recursion?: Recursion): string {
-  return 't.UnionC<[\n' + printStaticCTypesCombinator(c.types, i, recursion) + '\n]>' 
+  return 't.UnionC<[\n' + printStaticCTypesCombinator(c.types, i, recursion) + '\n]>'
 }
 
 function printStaticCTaggedUnionCombinator(c: TaggedUnionCombinator, i: number, recursion?: Recursion): string {
