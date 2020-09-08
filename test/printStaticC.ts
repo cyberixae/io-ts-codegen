@@ -190,27 +190,10 @@ describe('printStaticC', () => {
       )
     })
 
-    it('should handle the isExplicit argument', () => {
-      const declaration = t.typeDeclaration(
-        'Foo',
-        t.typeCombinator([t.property('foo', t.stringType)], 'FooC'),
-        true,
-        true,
-        true
-      )
-      assert.strictEqual(
-        t.printStaticC(declaration),
-        `export type FooC = t.ReadonlyC<t.TypeC<{
-  foo: t.StringC
-}>>`
-      )
-    })
-
     it('should handle the description argument', () => {
       const declaration = t.typeDeclaration(
         'Foo',
         t.typeCombinator([t.property('foo', t.stringType)], 'FooC'),
-        true,
         true,
         true,
         'bar'

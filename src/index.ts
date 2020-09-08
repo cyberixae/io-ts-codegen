@@ -198,7 +198,6 @@ export interface TypeDeclaration extends Readonly {
   name: string
   type: TypeReference
   isExported: boolean
-  isExplicit: boolean
   description?: string
 }
 
@@ -447,7 +446,6 @@ export function typeDeclaration(
   isExported: boolean = false,
   /** @deprecated */
   isReadonly: boolean = false,
-  isExplicit: boolean = false,
   description?: string
 ): TypeDeclaration {
   return {
@@ -455,7 +453,6 @@ export function typeDeclaration(
     name,
     type,
     isExported,
-    isExplicit,
     isReadonly,
     description
   }
@@ -818,8 +815,6 @@ function printRuntimeTypeDeclaration(declaration: TypeDeclaration, i: number): s
   }
   if (type.kind === 'RecursiveCombinator') {
     s = `const ${name}: t.Type<${name}, ${name}Output> = ${s}`
-  } else if (declaration.isExplicit) {
-    s = `const ${name}: ${name}C = ${s}`
   } else {
     s = `const ${name} = ${s}`
   }
@@ -900,7 +895,7 @@ export function printRuntime(node: Node, i: number = 0): string {
 export function getRecursiveTypeDeclaration(declaration: TypeDeclaration): TypeDeclaration {
   const name = declaration.name
   const recursive = recursiveCombinator(identifier(name), name, declaration.type)
-  return typeDeclaration(name, recursive, declaration.isExported, declaration.isReadonly, declaration.isExplicit)
+  return typeDeclaration(name, recursive, declaration.isExported, declaration.isReadonly)
 }
 
 export function sort(
