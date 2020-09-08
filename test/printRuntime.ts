@@ -287,7 +287,7 @@ describe('printRuntime', () => {
       assert.strictEqual(
         t.printRuntime(declaration),
         `/** bar */
-export const Foo: FooC = t.readonly(t.type({
+export const Foo = t.readonly(t.type({
   foo: t.string
 }), 'Foo')`
       )
@@ -352,11 +352,20 @@ interface CategoryOutput {
     const declaration1 = t.typeDeclaration('Foo', optionCombinator(t.stringType))
     assert.strictEqual(t.printRuntime(declaration1), `const Foo = createOptionFromNullable(t.string)`)
     assert.strictEqual(t.printStatic(declaration1), `type Foo = Option<string>`)
-    assert.strictEqual(t.printStaticC(declaration1), `type FooC = t.Typeof<typeof createOptionFromNullable(t.string)>`)
+    assert.strictEqual(t.printC(declaration1), `// exists type FooC extends t.Any`)
     const declaration2 = t.customCombinator(`string`, `t.string`)
     assert.strictEqual(t.printRuntime(declaration2), `t.string`)
     assert.strictEqual(t.printStatic(declaration2), `string`)
-    assert.strictEqual(t.printStaticC(declaration2), `t.Typeof<typeof t.string>`)
+    assert.strictEqual(t.printC(declaration2), `t.Any`)
+  })
+
+  it('should handle custom type declaration', () => {
+    const declaration = t.customTypeDeclaration(
+      'Foo',
+      `export type Foo = Option<string>`,
+      `const Foo = createOptionFromNullable(t.string)`
+    )
+    assert.strictEqual(t.printC(declaration), `// exists type FooC extends t.Any`)
   })
 
   it('StringType', () => {

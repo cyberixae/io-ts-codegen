@@ -1153,95 +1153,95 @@ export function printStatic(node: Node, i: number = 0, recursion?: Recursion): s
   }
 }
 
-function printStaticCProperty(p: Property, i: number, recursion?: Recursion): string {
+function printCProperty(p: Property, i: number, recursion?: Recursion): string {
   const optional = p.isOptional ? '?' : ''
-  const type = printStaticC(p.type, i, recursion)
-  const sep = type.charAt(0) === '\n' ? ':' : ': '
+  const type = printC(p.type, i, recursion)
+  const sep = ': '
   return printDescription(p.description, i) + indent(i) + escapePropertyKey(p.key) + optional + sep + type
 }
 
-function printStaticCLiteralCombinator(c: LiteralCombinator): string {
+function printCLiteralCombinator(c: LiteralCombinator): string {
   let s = 't.LiteralC<'
   s += typeof c.value === 'string' ? escapeString(c.value) : String(c.value)
   s += '>'
   return s
 }
 
-function printStaticCInterfaceCombinator(c: InterfaceCombinator, i: number, recursion?: Recursion): string {
+function printCInterfaceCombinator(c: InterfaceCombinator, i: number, recursion?: Recursion): string {
   let s = 't.TypeC<{\n'
-  s += c.properties.map(p => printStaticCProperty(p, i + 1, recursion)).join(',\n')
+  s += c.properties.map(p => printCProperty(p, i + 1, recursion)).join(',\n')
   s += `\n${indent(i)}}>`
   return s
 }
 
-function printStaticCPartialCombinator(c: PartialCombinator, i: number, recursion?: Recursion): string {
+function printCPartialCombinator(c: PartialCombinator, i: number, recursion?: Recursion): string {
   let s = 't.TypeC<{\n'
-  s += c.properties.map(p => printStaticCProperty({ ...p, isOptional: true }, i + 1, recursion)).join(',\n')
+  s += c.properties.map(p => printCProperty({ ...p, isOptional: true }, i + 1, recursion)).join(',\n')
   s += `\n${indent(i)}}>`
   return s
 }
 
-function printStaticCTypesCombinator(types: Array<TypeReference>, i: number, recursion?: Recursion): string {
+function printCTypesCombinator(types: Array<TypeReference>, i: number, recursion?: Recursion): string {
   const indentation = indent(i + 1)
-  return types.map(t => `${indentation}${printStaticC(t, i, recursion)}`).join(`,\n`)
+  return types.map(t => `${indentation}${printC(t, i, recursion)}`).join(`,\n`)
 }
 
-function printStaticCUnionCombinator(c: UnionCombinator, i: number, recursion?: Recursion): string {
-  return 't.UnionC<[\n' + printStaticCTypesCombinator(c.types, i, recursion) + '\n]>'
+function printCUnionCombinator(c: UnionCombinator, i: number, recursion?: Recursion): string {
+  return 't.UnionC<[\n' + printCTypesCombinator(c.types, i, recursion) + '\n]>'
 }
 
-function printStaticCTaggedUnionCombinator(c: TaggedUnionCombinator, i: number, recursion?: Recursion): string {
-  return 't.UnionC<[\n' + printStaticCTypesCombinator(c.types, i, recursion) + '\n]>'
+function printCTaggedUnionCombinator(c: TaggedUnionCombinator, i: number, recursion?: Recursion): string {
+  return 't.UnionC<[\n' + printCTypesCombinator(c.types, i, recursion) + '\n]>'
 }
 
-function printStaticCIntersectionCombinator(c: IntersectionCombinator, i: number, recursion?: Recursion): string {
-  return 't.IntersectionC<[\n' + printStaticCTypesCombinator(c.types, i, recursion) + '\n]>'
+function printCIntersectionCombinator(c: IntersectionCombinator, i: number, recursion?: Recursion): string {
+  return 't.IntersectionC<[\n' + printCTypesCombinator(c.types, i, recursion) + '\n]>'
 }
 
-function printStaticCKeyofCombinator(c: KeyofCombinator, i: number): string {
-  return printStaticC(unionCombinator(c.values.map(value => literalCombinator(value))), i)
+function printCKeyofCombinator(c: KeyofCombinator, i: number): string {
+  return printC(unionCombinator(c.values.map(value => literalCombinator(value))), i)
 }
 
-function printStaticCArrayCombinator(c: ArrayCombinator, i: number, recursion?: Recursion): string {
-  return `t.ArrayC<${printStaticC(c.type, i, recursion)}>`
+function printCArrayCombinator(c: ArrayCombinator, i: number, recursion?: Recursion): string {
+  return `t.ArrayC<${printC(c.type, i, recursion)}>`
 }
 
-function printStaticCExactCombinator(c: ExactCombinator, i: number, recursion?: Recursion): string {
-  return printStaticC(c.type, i, recursion)
+function printCExactCombinator(c: ExactCombinator, i: number, recursion?: Recursion): string {
+  return printC(c.type, i, recursion)
 }
 
-function printStaticCStrictCombinator(c: StrictCombinator, i: number, recursion?: Recursion): string {
+function printCStrictCombinator(c: StrictCombinator, i: number, recursion?: Recursion): string {
   let s = 't.TypeC<{\n'
-  s += c.properties.map(p => printStaticCProperty(p, i + 1, recursion)).join(',\n')
+  s += c.properties.map(p => printCProperty(p, i + 1, recursion)).join(',\n')
   s += `\n${indent(i)}}>`
   return s
 }
 
-function printStaticCReadonlyCombinator(c: ReadonlyCombinator, i: number, recursion?: Recursion): string {
-  return `t.ReadonlyC<${printStaticC(c.type, i, recursion)}>`
+function printCReadonlyCombinator(c: ReadonlyCombinator, i: number, recursion?: Recursion): string {
+  return `t.ReadonlyC<${printC(c.type, i, recursion)}>`
 }
 
-function printStaticCBrandCombinator(bc: BrandCombinator, i: number, recursion?: Recursion): string {
-  return `t.BrandC<${printStaticC(bc.type, i, recursion)}, ${bc.name}Brand>`
+function printCBrandCombinator(bc: BrandCombinator, i: number, recursion?: Recursion): string {
+  return `t.BrandC<${printC(bc.type, i, recursion)}, ${bc.name}Brand>`
 }
 
-function printStaticCReadonlyArrayCombinator(c: ReadonlyArrayCombinator, i: number, recursion?: Recursion): string {
-  return `t.ReadonlyArrayC<${printStaticC(c.type, i, recursion)}>`
+function printCReadonlyArrayCombinator(c: ReadonlyArrayCombinator, i: number, recursion?: Recursion): string {
+  return `t.ReadonlyArrayC<${printC(c.type, i, recursion)}>`
 }
 
-function printStaticCDictionaryCombinator(c: DictionaryCombinator, i: number, recursion?: Recursion): string {
-  return `t.RecordC<${printStaticC(c.domain, i)}, ${printStaticC(c.codomain, i, recursion)}>`
+function printCDictionaryCombinator(c: DictionaryCombinator, i: number, recursion?: Recursion): string {
+  return `t.RecordC<${printC(c.domain, i)}, ${printC(c.codomain, i, recursion)}>`
 }
 
-function printStaticCTupleCombinator(c: TupleCombinator, i: number, recursion?: Recursion): string {
+function printCTupleCombinator(c: TupleCombinator, i: number, recursion?: Recursion): string {
   const indentation = indent(i + 1)
   let s = '[\n'
-  s += c.types.map(t => `${indentation}${printStaticC(t, i, recursion)}`).join(',\n')
+  s += c.types.map(t => `${indentation}${printC(t, i, recursion)}`).join(',\n')
   s += `\n${indent(i)}]`
   return s
 }
 
-function printStaticCTypeDeclarationType(
+function printCTypeDeclarationType(
   type: TypeReference,
   name: string,
   isReadonly: boolean,
@@ -1249,19 +1249,22 @@ function printStaticCTypeDeclarationType(
   description: string | undefined,
   recursion?: Recursion
 ): string {
-  let s = printStaticC(type, 0, recursion)
+  let s = printC(type, 0, recursion)
   if (isReadonly) {
     s = `t.ReadonlyC<${s}>`
   }
-  s = `type ${name}C =${s.length > 0 && s.substring(0, 1) === '\n' ? s : ' ' + s}`
+  if (type.kind.startsWith('Custom')) {
+    return `// exists type ${name}C extends ${s}`
+  }
+  s = `type ${name}C = ${s}`
   if (isExported) {
     s = `export ${s}`
   }
   return printDescription(description, 0) + s
 }
 
-function printStaticCTypeDeclaration(declaration: TypeDeclaration): string {
-  return printStaticCTypeDeclarationType(
+function printCTypeDeclaration(declaration: TypeDeclaration): string {
+  return printCTypeDeclarationType(
     declaration.type,
     declaration.name,
     declaration.isReadonly,
@@ -1270,7 +1273,7 @@ function printStaticCTypeDeclaration(declaration: TypeDeclaration): string {
   )
 }
 
-export function printStaticC(node: Node, i: number = 0, recursion?: Recursion): string {
+export function printC(node: Node, i: number = 0, recursion?: Recursion): string {
   switch (node.kind) {
     case 'Identifier':
       return node.name + 'C'
@@ -1294,41 +1297,41 @@ export function printStaticC(node: Node, i: number = 0, recursion?: Recursion): 
     case 'AnyDictionaryType':
       return 't.RecordC<t.StringC, t.UnknownC>'
     case 'LiteralCombinator':
-      return printStaticCLiteralCombinator(node)
+      return printCLiteralCombinator(node)
     case 'InterfaceCombinator':
-      return printStaticCInterfaceCombinator(node, i, recursion)
+      return printCInterfaceCombinator(node, i, recursion)
     case 'PartialCombinator':
-      return printStaticCPartialCombinator(node, i, recursion)
+      return printCPartialCombinator(node, i, recursion)
     case 'UnionCombinator':
-      return printStaticCUnionCombinator(node, i, recursion)
+      return printCUnionCombinator(node, i, recursion)
     case 'TaggedUnionCombinator':
-      return printStaticCTaggedUnionCombinator(node, i, recursion)
+      return printCTaggedUnionCombinator(node, i, recursion)
     case 'IntersectionCombinator':
-      return printStaticCIntersectionCombinator(node, i, recursion)
+      return printCIntersectionCombinator(node, i, recursion)
     case 'KeyofCombinator':
-      return printStaticCKeyofCombinator(node, i)
+      return printCKeyofCombinator(node, i)
     case 'ArrayCombinator':
-      return printStaticCArrayCombinator(node, i, recursion)
+      return printCArrayCombinator(node, i, recursion)
     case 'ReadonlyArrayCombinator':
-      return printStaticCReadonlyArrayCombinator(node, i, recursion)
+      return printCReadonlyArrayCombinator(node, i, recursion)
     case 'TupleCombinator':
-      return printStaticCTupleCombinator(node, i, recursion)
+      return printCTupleCombinator(node, i, recursion)
     case 'RecursiveCombinator':
-      return printStaticC(node.type, i, recursion)
+      return printC(node.type, i, recursion)
     case 'DictionaryCombinator':
-      return printStaticCDictionaryCombinator(node, i, recursion)
+      return printCDictionaryCombinator(node, i, recursion)
     case 'TypeDeclaration':
-      return printStaticCTypeDeclaration(node)
+      return printCTypeDeclaration(node)
     case 'CustomTypeDeclaration':
     case 'CustomCombinator':
-      return `t.Typeof<typeof ${node.runtime}>`
+      return 't.Any'
     case 'ExactCombinator':
-      return printStaticCExactCombinator(node, i, recursion)
+      return printCExactCombinator(node, i, recursion)
     case 'StrictCombinator':
-      return printStaticCStrictCombinator(node, i, recursion)
+      return printCStrictCombinator(node, i, recursion)
     case 'ReadonlyCombinator':
-      return printStaticCReadonlyCombinator(node, i, recursion)
+      return printCReadonlyCombinator(node, i, recursion)
     case 'BrandCombinator':
-      return printStaticCBrandCombinator(node, i, recursion)
+      return printCBrandCombinator(node, i, recursion)
   }
 }

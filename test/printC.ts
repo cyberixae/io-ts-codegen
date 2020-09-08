@@ -1,16 +1,16 @@
 import * as assert from 'assert'
 import * as t from '../src'
 
-describe('printStaticC', () => {
+describe('printC', () => {
   it('literalCombinator', () => {
     const declaration = t.typeDeclaration('Foo', t.literalCombinator(1))
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.LiteralC<1>`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.LiteralC<1>`)
   })
 
   it('intersectionCombinator', () => {
     const declaration = t.typeDeclaration('Foo', t.intersectionCombinator([t.stringType, t.numberType]))
     assert.strictEqual(
-      t.printStaticC(declaration),
+      t.printC(declaration),
       `type FooC = t.IntersectionC<[
   t.StringC,
   t.NumberC
@@ -21,7 +21,7 @@ describe('printStaticC', () => {
   it('keyofCombinator', () => {
     const declaration = t.typeDeclaration('Foo', t.keyofCombinator(['a', 'b']))
     assert.strictEqual(
-      t.printStaticC(declaration),
+      t.printC(declaration),
       `type FooC = t.UnionC<[
   t.LiteralC<'a'>,
   t.LiteralC<'b'>
@@ -32,7 +32,7 @@ describe('printStaticC', () => {
   it('tupleCombinator', () => {
     const declaration = t.typeDeclaration('Foo', t.tupleCombinator([t.stringType, t.numberType]))
     assert.strictEqual(
-      t.printStaticC(declaration),
+      t.printC(declaration),
       `type FooC = [
   t.StringC,
   t.NumberC
@@ -50,7 +50,7 @@ describe('printStaticC', () => {
         ])
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `type FooC = t.UnionC<[
   t.TypeC<{
   type: t.LiteralC<'A'>
@@ -72,7 +72,7 @@ describe('printStaticC', () => {
         )
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `type BExprC = t.UnionC<[
   Lit_bVC,
   NotVC,
@@ -89,7 +89,7 @@ describe('printStaticC', () => {
         t.typeCombinator([t.property('a', t.stringType, false, 'description')])
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `type FooC = t.TypeC<{
   /** description */
   a: t.StringC
@@ -103,7 +103,7 @@ describe('printStaticC', () => {
         t.typeCombinator([t.property('foo', t.stringType), t.property('bar', t.numberType)])
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `type FooC = t.TypeC<{
   foo: t.StringC,
   bar: t.NumberC
@@ -117,7 +117,7 @@ describe('printStaticC', () => {
         t.typeCombinator([t.property('foo', t.stringType), t.property('bar', t.numberType, true)])
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `type FooC = t.TypeC<{
   foo: t.StringC,
   bar?: t.NumberC
@@ -134,7 +134,7 @@ describe('printStaticC', () => {
         ])
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `type FooC = t.TypeC<{
   foo: t.StringC,
   bar: t.TypeC<{
@@ -154,7 +154,7 @@ describe('printStaticC', () => {
         ])
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `type FooC = t.TypeC<{
   'foo bar': t.StringC,
   'image/jpeg': t.StringC,
@@ -168,7 +168,7 @@ describe('printStaticC', () => {
     it('should handle the isExported argument', () => {
       const declaration = t.typeDeclaration('Foo', t.typeCombinator([t.property('foo', t.stringType)], 'FooC'), true)
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `export type FooC = t.TypeC<{
   foo: t.StringC
 }>`
@@ -183,7 +183,7 @@ describe('printStaticC', () => {
         true
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `export type FooC = t.ReadonlyC<t.TypeC<{
   foo: t.StringC
 }>>`
@@ -199,7 +199,7 @@ describe('printStaticC', () => {
         'bar'
       )
       assert.strictEqual(
-        t.printStaticC(declaration),
+        t.printC(declaration),
         `/** bar */
 export type FooC = t.ReadonlyC<t.TypeC<{
   foo: t.StringC
@@ -214,7 +214,7 @@ export type FooC = t.ReadonlyC<t.TypeC<{
       t.partialCombinator([t.property('foo', t.stringType), t.property('bar', t.numberType, true)])
     )
     assert.strictEqual(
-      t.printStaticC(declaration),
+      t.printC(declaration),
       `type FooC = t.TypeC<{
   foo?: t.StringC,
   bar?: t.NumberC
@@ -224,7 +224,7 @@ export type FooC = t.ReadonlyC<t.TypeC<{
 
   it('recordCombinator', () => {
     const declaration = t.typeDeclaration('Foo', t.recordCombinator(t.stringType, t.numberType))
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.RecordC<t.StringC, t.NumberC>`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.RecordC<t.StringC, t.NumberC>`)
   })
 
   it('arrayCombinator', () => {
@@ -235,7 +235,7 @@ export type FooC = t.ReadonlyC<t.TypeC<{
       false
     )
     assert.strictEqual(
-      t.printStaticC(declaration),
+      t.printC(declaration),
       `export type FooC = t.TypeC<{
   foo: t.ArrayC<t.StringC>
 }>`
@@ -250,7 +250,7 @@ export type FooC = t.ReadonlyC<t.TypeC<{
       false
     )
     assert.strictEqual(
-      t.printStaticC(declaration),
+      t.printC(declaration),
       `export type FooC = t.TypeC<{
   foo: t.ReadonlyArrayC<t.StringC>
 }>`
@@ -259,48 +259,48 @@ export type FooC = t.ReadonlyC<t.TypeC<{
 
   it('StringType', () => {
     const declaration = t.typeDeclaration('Foo', t.stringType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.StringC`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.StringC`)
   })
 
   it('NumberType', () => {
     const declaration = t.typeDeclaration('Foo', t.numberType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.NumberC`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.NumberC`)
   })
 
   it('BooleanType', () => {
     const declaration = t.typeDeclaration('Foo', t.booleanType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.BooleanC`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.BooleanC`)
   })
 
   it('NullType', () => {
     const declaration = t.typeDeclaration('Foo', t.nullType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.NullC`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.NullC`)
   })
 
   it('UndefinedType', () => {
     const declaration = t.typeDeclaration('Foo', t.undefinedType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.UndefinedC`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.UndefinedC`)
   })
 
   it('IntegerType', () => {
     // tslint:disable-next-line: deprecation
     const declaration = t.typeDeclaration('Foo', t.integerType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.NumberC`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.NumberC`)
   })
 
   it('UnknownArrayType', () => {
     const declaration = t.typeDeclaration('Foo', t.unknownArrayType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.ArrayC<t.UnknownC>`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.ArrayC<t.UnknownC>`)
   })
 
   it('UnknownRecordType', () => {
     const declaration = t.typeDeclaration('Foo', t.unknownRecordType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.RecordC<t.StringC, t.UnknownC>`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.RecordC<t.StringC, t.UnknownC>`)
   })
 
   it('FunctionType', () => {
     const declaration = t.typeDeclaration('Foo', t.functionType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.FunctionC`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.FunctionC`)
   })
 
   it('exactCombinator', () => {
@@ -309,7 +309,7 @@ export type FooC = t.ReadonlyC<t.TypeC<{
       t.exactCombinator(t.typeCombinator([t.property('foo', t.stringType), t.property('bar', t.numberType)]))
     )
     assert.strictEqual(
-      t.printStaticC(declaration),
+      t.printC(declaration),
       `type FooC = t.TypeC<{
   foo: t.StringC,
   bar: t.NumberC
@@ -319,7 +319,7 @@ export type FooC = t.ReadonlyC<t.TypeC<{
 
   it('UnknownType', () => {
     const declaration = t.typeDeclaration('Foo', t.unknownType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.UnknownC`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.UnknownC`)
   })
 
   it('strictCombinator', () => {
@@ -328,7 +328,7 @@ export type FooC = t.ReadonlyC<t.TypeC<{
       t.strictCombinator([t.property('foo', t.stringType), t.property('bar', t.numberType)])
     )
     assert.strictEqual(
-      t.printStaticC(declaration),
+      t.printC(declaration),
       `type FooC = t.TypeC<{
   foo: t.StringC,
   bar: t.NumberC
@@ -342,7 +342,7 @@ export type FooC = t.ReadonlyC<t.TypeC<{
       t.readonlyCombinator(t.typeCombinator([t.property('foo', t.stringType), t.property('bar', t.numberType)]))
     )
     assert.strictEqual(
-      t.printStaticC(D1),
+      t.printC(D1),
       `type FooC = t.ReadonlyC<t.TypeC<{
   foo: t.StringC,
   bar: t.NumberC
@@ -352,11 +352,11 @@ export type FooC = t.ReadonlyC<t.TypeC<{
 
   it('IntType', () => {
     const declaration = t.typeDeclaration('Foo', t.intType)
-    assert.strictEqual(t.printStaticC(declaration), `type FooC = t.BrandC<t.NumberC, t.IntBrand>`)
+    assert.strictEqual(t.printC(declaration), `type FooC = t.BrandC<t.NumberC, t.IntBrand>`)
   })
 
   it('brandCombinator', () => {
     const D1 = t.typeDeclaration('Foo', t.brandCombinator(t.numberType, x => `${x} >= 0`, 'Positive'))
-    assert.strictEqual(t.printStaticC(D1), `type FooC = t.BrandC<t.NumberC, PositiveBrand>`)
+    assert.strictEqual(t.printC(D1), `type FooC = t.BrandC<t.NumberC, PositiveBrand>`)
   })
 })
