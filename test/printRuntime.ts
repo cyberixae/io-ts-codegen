@@ -365,6 +365,8 @@ interface CategoryOutput {
       `export type Foo = Option<string>`,
       `const Foo = createOptionFromNullable(t.string)`
     )
+    assert.strictEqual(t.printRuntime(declaration), `const Foo = createOptionFromNullable(t.string)`)
+    assert.strictEqual(t.printStatic(declaration), `export type Foo = Option<string>`)
     assert.strictEqual(t.printC(declaration), `// exists type FooC extends t.Any`)
   })
 

@@ -1241,6 +1241,10 @@ function printCTupleCombinator(c: TupleCombinator, i: number, recursion?: Recurs
   return s
 }
 
+function printCCustomTypeDeclarationType(name: string): string {
+  return `// exists type ${name}C extends t.Any`
+}
+
 function printCTypeDeclarationType(
   type: TypeReference,
   name: string,
@@ -1249,12 +1253,12 @@ function printCTypeDeclarationType(
   description: string | undefined,
   recursion?: Recursion
 ): string {
+  if (type.kind.startsWith('Custom')) {
+    return printCCustomTypeDeclarationType(name)
+  }
   let s = printC(type, 0, recursion)
   if (isReadonly) {
     s = `t.ReadonlyC<${s}>`
-  }
-  if (type.kind.startsWith('Custom')) {
-    return `// exists type ${name}C extends ${s}`
   }
   s = `type ${name}C = ${s}`
   if (isExported) {
@@ -1271,6 +1275,10 @@ function printCTypeDeclaration(declaration: TypeDeclaration): string {
     declaration.isExported,
     declaration.description
   )
+}
+
+function printCCustomTypeDeclaration(declaration: CustomTypeDeclaration): string {
+  return printCCustomTypeDeclarationType(declaration.name)
 }
 
 export function printC(node: Node, i: number = 0, recursion?: Recursion): string {
@@ -1323,6 +1331,7 @@ export function printC(node: Node, i: number = 0, recursion?: Recursion): string
     case 'TypeDeclaration':
       return printCTypeDeclaration(node)
     case 'CustomTypeDeclaration':
+      return printCCustomTypeDeclaration(node)
     case 'CustomCombinator':
       return 't.Any'
     case 'ExactCombinator':
